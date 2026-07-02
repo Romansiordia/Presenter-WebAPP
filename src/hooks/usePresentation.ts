@@ -15,7 +15,7 @@ export function usePresentation() {
   const theme = THEMES[currentTheme];
 
   const handleTextChange = useCallback(
-    (field: keyof Slide, value: string, index: number | null = null, subfield: string | null = null) => {
+    (field: keyof Slide, value: any, index: number | null = null, subfield: string | null = null) => {
       setSlides((prev) => {
         const updated = [...prev];
         const slide = { ...updated[activeSlideIndex] };

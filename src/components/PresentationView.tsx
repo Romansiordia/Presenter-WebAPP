@@ -119,9 +119,19 @@ export function PresentationView({
 
               {activeSlide.layout === 'image' && (
                 <div className="w-full h-full flex flex-col items-center justify-center mt-6">
-                  <div className="w-full max-w-5xl aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                  <div className="relative w-full max-w-5xl aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center">
                     {activeSlide.imageUrl && (
-                      <img src={activeSlide.imageUrl} alt="Slide content" className="w-full h-full object-cover" />
+                      <motion.img 
+                        src={activeSlide.imageUrl} 
+                        alt="Slide content" 
+                        className="object-contain absolute" 
+                        style={{ 
+                          width: `${activeSlide.imageScale || 100}%`, 
+                          height: `${activeSlide.imageScale || 100}%`,
+                          x: activeSlide.imageX || 0,
+                          y: activeSlide.imageY || 0,
+                        }} 
+                      />
                     )}
                   </div>
                 </div>

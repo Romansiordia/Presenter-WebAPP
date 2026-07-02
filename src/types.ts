@@ -20,6 +20,9 @@ export interface Slide {
   metrics: Metric[];
   features: Feature[];
   imageUrl?: string;
+  imageScale?: number | string;
+  imageX?: number;
+  imageY?: number;
 }
 
 export interface Theme {

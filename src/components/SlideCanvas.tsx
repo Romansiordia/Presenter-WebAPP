@@ -1,11 +1,12 @@
-import { Info, Sparkle, LayoutTemplate, List, GripHorizontal, BarChart2, Image as ImageIcon } from 'lucide-react';
+import { Info, Sparkle, LayoutTemplate, List, GripHorizontal, BarChart2, Image as ImageIcon, Move } from 'lucide-react';
 import { Slide, Theme, SlideLayout } from '../types';
 import { DynamicIcon } from './DynamicIcon';
+import { motion } from 'motion/react';
 
 interface SlideCanvasProps {
   activeSlide: Slide;
   theme: Theme;
-  onTextChange: (field: keyof Slide, value: string, index?: number | null, subfield?: string | null) => void;
+  onTextChange: (field: keyof Slide, value: any, index?: number | null, subfield?: string | null) => void;
 }
 
 export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasProps) {
@@ -215,23 +216,89 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
               <div className="w-full h-full flex flex-col items-center justify-center mt-6">
                 <div className={`relative group w-full max-w-4xl aspect-[21/9] rounded-2xl overflow-hidden border-2 border-dashed ${theme.accentBorder} transition-all flex items-center justify-center shadow-lg ${theme.cardBg}`}>
                   {activeSlide.imageUrl ? (
-                    <img src={activeSlide.imageUrl} alt="Slide content" className="w-full h-full object-cover" />
+                    <motion.img 
+                      src={activeSlide.imageUrl} 
+                      alt="Slide content" 
+                      className="object-contain cursor-move absolute" 
+                      style={{ 
+                        width: `${activeSlide.imageScale || 100}%`, 
+                        height: `${activeSlide.imageScale || 100}%`,
+                        x: activeSlide.imageX || 0,
+                        y: activeSlide.imageY || 0,
+                      }}
+                      drag
+                      dragMomentum={false}
+                      onDragEnd={(_, info) => {
+                        const newX = (activeSlide.imageX || 0) + info.offset.x;
+                        const newY = (activeSlide.imageY || 0) + info.offset.y;
+                        onTextChange('imageX', newX);
+                        onTextChange('imageY', newY);
+                      }}
+                    />
                   ) : (
                     <div className={`flex flex-col items-center opacity-60 ${theme.text}`}>
                       <ImageIcon className="w-10 h-10 mb-3" />
-                      <span className="text-sm font-semibold tracking-widest uppercase">Add Image URL</span>
+                      <span className="text-sm font-semibold tracking-widest uppercase">Agregar Imagen</span>
                     </div>
                   )}
-                  {/* Overlay for editing URL */}
-                  <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-sm">
-                    <input 
-                      type="text" 
-                      placeholder="Paste image URL here..." 
-                      className="w-3/4 max-w-lg px-5 py-3 rounded-xl shadow-2xl bg-white text-slate-900 border-none outline-none ring-4 ring-indigo-500/50 text-sm font-medium"
-                      value={activeSlide.imageUrl || ''}
-                      onChange={(e) => onTextChange('imageUrl', e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
+                  {/* Overlay for editing URL/upload/scale */}
+                  <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity backdrop-blur-sm gap-4">
+                    <div className="flex w-3/4 max-w-lg gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Pegar URL de la imagen..." 
+                        className="flex-1 px-5 py-3 rounded-xl shadow-2xl bg-white text-slate-900 border-none outline-none ring-2 ring-indigo-500/50 text-sm font-medium"
+                        value={activeSlide.imageUrl || ''}
+                        onChange={(e) => onTextChange('imageUrl', e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <label className="flex items-center justify-center px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-2xl cursor-pointer text-sm font-semibold transition-colors">
+                        Subir Archivo
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                onTextChange('imageUrl', event.target?.result as string);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+                    {activeSlide.imageUrl && (
+                      <div className="flex flex-col gap-3 w-3/4 max-w-lg">
+                        <div className="flex items-center gap-3 bg-white/10 p-3 rounded-xl backdrop-blur-md">
+                          <span className="text-white text-xs font-bold uppercase tracking-wider">Tamaño</span>
+                          <input 
+                            type="range" 
+                            min="10" 
+                            max="300" 
+                            value={activeSlide.imageScale || 100} 
+                            onChange={(e) => onTextChange('imageScale', e.target.value)} 
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex-1 accent-indigo-500"
+                          />
+                          <span className="text-white text-xs font-bold w-12 text-right">{activeSlide.imageScale || 100}%</span>
+                        </div>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onTextChange('imageX', 0);
+                            onTextChange('imageY', 0);
+                          }}
+                          className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl backdrop-blur-md transition-colors text-xs font-bold uppercase tracking-wider"
+                        >
+                          <Move className="w-4 h-4" />
+                          Restablecer Posición
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
