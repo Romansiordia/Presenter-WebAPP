@@ -30,7 +30,7 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-900">
-      <Header onEnterPreview={() => setIsPreviewMode(true)} />
+      <Header onEnterPreview={() => setIsPreviewMode(true)} slides={slides} />
 
       <div className="flex flex-1 overflow-hidden">
         <LeftSidebar 
