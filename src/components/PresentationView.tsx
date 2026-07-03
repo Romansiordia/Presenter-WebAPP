@@ -137,6 +137,46 @@ export function PresentationView({
 
             </div>
 
+            {/* Render Freeform Canvas Elements */}
+            {activeSlide.elements?.map((el) => (
+              <motion.div
+                key={el.id}
+                className="absolute z-30"
+                style={{ x: el.x, y: el.y, width: el.width }}
+              >
+                {el.type === 'text' && (
+                  <div 
+                    className={`whitespace-pre-wrap ${theme.text} font-medium`}
+                    style={{ fontSize: `${(el.scale || 100) / 100 * 1.2}rem` }}
+                  >
+                    {el.content}
+                  </div>
+                )}
+
+                {el.type === 'card' && (
+                  <div className={`p-6 rounded-2xl shadow-xl border ${theme.cardBg} ${theme.accentBorder}`}>
+                    <h3 className={`font-bold text-lg mb-2 ${theme.text}`}>
+                      {el.title}
+                    </h3>
+                    <p className={`text-sm opacity-80 min-h-[20px] ${theme.text}`}>
+                      {el.content}
+                    </p>
+                  </div>
+                )}
+
+                {el.type === 'image' && el.content && (
+                  <div className="w-full flex items-center justify-center min-h-[100px]">
+                    <img 
+                      src={el.content} 
+                      alt="Canvas image" 
+                      className="rounded-xl shadow-2xl" 
+                      style={{ width: `${el.scale || 100}%` }}
+                    />
+                  </div>
+                )}
+              </motion.div>
+            ))}
+
           </motion.div>
         </AnimatePresence>
       </div>

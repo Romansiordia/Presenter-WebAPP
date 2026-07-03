@@ -1,7 +1,8 @@
-import { Info, Sparkle, LayoutTemplate, List, GripHorizontal, BarChart2, Image as ImageIcon, Move } from 'lucide-react';
-import { Slide, Theme, SlideLayout } from '../types';
+import { Info, Sparkle, LayoutTemplate, List, GripHorizontal, BarChart2, Image as ImageIcon, Move, Plus, Type, CreditCard, X } from 'lucide-react';
+import { Slide, Theme, SlideLayout, CanvasElement, ElementType } from '../types';
 import { DynamicIcon } from './DynamicIcon';
 import { motion } from 'motion/react';
+import { useState } from 'react';
 
 interface SlideCanvasProps {
   activeSlide: Slide;
@@ -10,14 +11,42 @@ interface SlideCanvasProps {
 }
 
 export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasProps) {
+  const [showAddMenu, setShowAddMenu] = useState(false);
+
   const handleLayoutChange = (layout: SlideLayout) => {
     onTextChange('layout', layout);
+  };
+
+  const handleAddElement = (type: ElementType) => {
+    const newElement: CanvasElement = {
+      id: `el-${Date.now()}`,
+      type,
+      x: 50,
+      y: 50,
+      width: 300,
+      scale: 100,
+      content: type === 'image' ? '' : 'Nuevo texto...',
+      title: type === 'card' ? 'Nuevo Tarjeta' : undefined,
+    };
+    onTextChange('elements', [...(activeSlide.elements || []), newElement]);
+    setShowAddMenu(false);
+  };
+
+  const handleUpdateElement = (id: string, updates: Partial<CanvasElement>) => {
+    const elements = activeSlide.elements || [];
+    const newElements = elements.map(el => el.id === id ? { ...el, ...updates } : el);
+    onTextChange('elements', newElements);
+  };
+
+  const handleRemoveElement = (id: string) => {
+    const elements = activeSlide.elements || [];
+    onTextChange('elements', elements.filter(el => el.id !== id));
   };
 
   return (
     <main className="flex-1 bg-slate-100 flex flex-col relative overflow-hidden">
       {/* Contextual Toolbar */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md shadow-md border border-slate-200/50 rounded-full px-4 py-1.5 flex items-center gap-2 z-10">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md shadow-md border border-slate-200/50 rounded-full px-4 py-1.5 flex items-center gap-2 z-30">
         <button 
           onClick={() => handleLayoutChange('title')}
           className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold ${activeSlide.layout === 'title' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
@@ -43,20 +72,20 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
           {activeSlide.layout === 'features' && <span>Features</span>}
         </button>
         <button 
-          onClick={() => handleLayoutChange('metrics')}
-          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold ${activeSlide.layout === 'metrics' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
-          title="Métricas"
-        >
-          <BarChart2 className="w-4 h-4" />
-          {activeSlide.layout === 'metrics' && <span>Metrics</span>}
-        </button>
-        <button 
           onClick={() => handleLayoutChange('image')}
           className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold ${activeSlide.layout === 'image' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
           title="Imagen"
         >
           <ImageIcon className="w-4 h-4" />
           {activeSlide.layout === 'image' && <span>Image</span>}
+        </button>
+        <button 
+          onClick={() => handleLayoutChange('freeform')}
+          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold ${activeSlide.layout === 'freeform' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
+          title="Libre"
+        >
+          <Move className="w-4 h-4" />
+          {activeSlide.layout === 'freeform' && <span>Libre</span>}
         </button>
         <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
         <div className="flex items-center gap-3">
@@ -80,6 +109,43 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
               className="w-12 h-6 px-1 border border-slate-300 rounded text-slate-700 bg-white"
             />
           </label>
+        </div>
+        <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
+        <div className="relative">
+          <button 
+            onClick={() => setShowAddMenu(!showAddMenu)}
+            className="p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700"
+            title="Añadir elemento"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Añadir</span>
+          </button>
+          
+          {showAddMenu && (
+            <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 w-48 overflow-hidden z-50">
+              <button 
+                onClick={() => handleAddElement('text')}
+                className="w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center gap-3 text-sm font-semibold text-slate-700 border-b border-slate-100"
+              >
+                <Type className="w-4 h-4 text-slate-400" />
+                Texto libre
+              </button>
+              <button 
+                onClick={() => handleAddElement('card')}
+                className="w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center gap-3 text-sm font-semibold text-slate-700 border-b border-slate-100"
+              >
+                <CreditCard className="w-4 h-4 text-slate-400" />
+                Tarjeta
+              </button>
+              <button 
+                onClick={() => handleAddElement('image')}
+                className="w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center gap-3 text-sm font-semibold text-slate-700"
+              >
+                <ImageIcon className="w-4 h-4 text-slate-400" />
+                Imagen libre
+              </button>
+            </div>
+          )}
         </div>
         <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
         <div className="flex items-center gap-2 text-slate-500 text-xs">
@@ -355,6 +421,114 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
             )}
 
           </div>
+
+          {/* Render Freeform Canvas Elements */}
+          {activeSlide.elements?.map((el) => (
+            <motion.div
+              key={el.id}
+              drag
+              dragMomentum={false}
+              onDragEnd={(_, info) => handleUpdateElement(el.id, { x: el.x + info.offset.x, y: el.y + info.offset.y })}
+              className="absolute group z-30"
+              style={{ x: el.x, y: el.y, width: el.width }}
+            >
+              {/* Controls (Delete, Scale) */}
+              <div className="absolute -top-10 left-0 bg-slate-800 text-white rounded-lg flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 shadow-xl z-50">
+                <button onClick={() => handleRemoveElement(el.id)} className="p-1.5 hover:bg-red-500 rounded-md transition-colors" title="Eliminar">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+                {(el.type === 'image' || el.type === 'text') && (
+                  <input 
+                    type="range" 
+                    min="10" 
+                    max="300" 
+                    value={el.scale || 100} 
+                    onChange={(e) => handleUpdateElement(el.id, { scale: parseInt(e.target.value) })}
+                    className="w-20 accent-indigo-500 mx-2"
+                  />
+                )}
+              </div>
+
+              {/* Content Rendering */}
+              {el.type === 'text' && (
+                <div 
+                  contentEditable
+                  suppressContentEditableWarning
+                  onBlur={(e) => handleUpdateElement(el.id, { content: e.currentTarget.innerText })}
+                  className={`outline-none cursor-move min-h-[40px] whitespace-pre-wrap ${theme.text} font-medium`}
+                  style={{ fontSize: `${(el.scale || 100) / 100 * 1.2}rem` }}
+                >
+                  {el.content}
+                </div>
+              )}
+
+              {el.type === 'card' && (
+                <div className={`p-6 rounded-2xl shadow-xl border cursor-move ${theme.cardBg} ${theme.accentBorder}`}>
+                  <h3 
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleUpdateElement(el.id, { title: e.currentTarget.innerText })}
+                    className={`font-bold text-lg mb-2 outline-none ${theme.text}`}
+                  >
+                    {el.title}
+                  </h3>
+                  <p
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={(e) => handleUpdateElement(el.id, { content: e.currentTarget.innerText })}
+                    className={`text-sm opacity-80 outline-none min-h-[20px] ${theme.text}`}
+                  >
+                    {el.content}
+                  </p>
+                </div>
+              )}
+
+              {el.type === 'image' && (
+                <div className="relative group/img cursor-move w-full flex items-center justify-center min-h-[100px] border-2 border-transparent hover:border-indigo-500/50 rounded-xl transition-all">
+                  {el.content ? (
+                    <img 
+                      src={el.content} 
+                      alt="Canvas image" 
+                      className="rounded-xl shadow-lg pointer-events-none" 
+                      style={{ width: `${el.scale || 100}%` }}
+                    />
+                  ) : (
+                    <div className={`flex flex-col items-center justify-center p-8 bg-slate-200/50 rounded-xl border-2 border-dashed ${theme.accentBorder} w-full`}>
+                      <ImageIcon className="w-8 h-8 opacity-40 mb-2" />
+                      <span className="text-xs font-bold uppercase opacity-40">Sin Imagen</span>
+                    </div>
+                  )}
+                  {/* Image Edit Overlay */}
+                  <div className="absolute inset-0 bg-slate-900/70 opacity-0 group-hover/img:opacity-100 flex flex-col items-center justify-center gap-2 rounded-xl transition-opacity">
+                    <input 
+                      type="text" 
+                      placeholder="URL..." 
+                      className="w-11/12 px-3 py-1.5 rounded-lg text-xs bg-white text-slate-900 outline-none"
+                      value={el.content || ''}
+                      onChange={(e) => handleUpdateElement(el.id, { content: e.target.value })}
+                      onPointerDown={(e) => e.stopPropagation()}
+                    />
+                    <label className="text-xs font-bold text-white bg-indigo-600 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-indigo-700 transition-colors" onPointerDown={(e) => e.stopPropagation()}>
+                      Subir
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => handleUpdateElement(el.id, { content: ev.target?.result as string });
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          ))}
 
           {/* Layout Guides Hover Effect */}
           <div className="absolute inset-0 border border-indigo-200 opacity-0 pointer-events-none hover:opacity-100 transition-opacity rounded-lg"></div>

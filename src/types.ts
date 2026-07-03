@@ -1,4 +1,18 @@
-export type SlideLayout = 'title' | 'bullets' | 'features' | 'metrics' | 'image';
+export type ElementType = 'image' | 'card' | 'text';
+
+export interface CanvasElement {
+  id: string;
+  type: ElementType;
+  x: number;
+  y: number;
+  width: number;
+  height?: number;
+  content?: string;
+  title?: string;
+  scale?: number;
+}
+
+export type SlideLayout = 'title' | 'bullets' | 'features' | 'metrics' | 'image' | 'freeform';
 
 export interface Feature {
   icon: string;
@@ -26,6 +40,7 @@ export interface Slide {
   textColor?: string;
   titleFontSize?: string;
   subtitleFontSize?: string;
+  elements?: CanvasElement[];
 }
 
 export interface Theme {
