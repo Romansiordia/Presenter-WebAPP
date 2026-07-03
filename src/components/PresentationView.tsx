@@ -53,13 +53,6 @@ export function PresentationView({
             style={{ maxHeight: 'calc(100vh - 160px)', maxWidth: 'calc((100vh - 160px) * 16 / 9)' }}
           >
             <div>
-              <div className="flex justify-between items-start mb-8">
-                <span className={`text-xs font-bold tracking-widest uppercase border px-3 py-1 rounded-sm ${theme.badge}`}>
-                  Zenith Corp
-                </span>
-                <Sparkle className={`w-6 h-6 ${theme.accent}`} />
-              </div>
-
               <h2 className={`text-5xl sm:text-6xl font-extrabold tracking-tight leading-tight ${theme.text} ${theme.fontClass}`}>
                 {activeSlide.title}
               </h2>
@@ -141,10 +134,6 @@ export function PresentationView({
 
             </div>
 
-            <div className="flex items-center justify-between pt-6 text-sm font-bold tracking-widest opacity-40 uppercase">
-              <span>Zenith Intelligence 2026</span>
-              <span>Confidential</span>
-            </div>
           </motion.div>
         </AnimatePresence>
       </div>

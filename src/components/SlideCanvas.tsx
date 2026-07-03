@@ -71,13 +71,6 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
         >
           
           <div>
-            <div className="flex justify-between items-start mb-6">
-              <span className={`text-[10px] font-bold tracking-widest uppercase border px-2 py-0.5 rounded-sm ${theme.badge}`}>
-                {theme.name}
-              </span>
-              <Sparkle className={`w-5 h-5 ${theme.accent}`} />
-            </div>
-
             <h2 
               contentEditable
               suppressContentEditableWarning
@@ -336,11 +329,6 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
               </div>
             )}
 
-          </div>
-
-          <div className="flex items-center justify-between pt-6 text-[11px] font-semibold tracking-wider opacity-50 uppercase">
-            <span>Zenith Intelligence 2026</span>
-            <span>Confidential</span>
           </div>
 
           {/* Layout Guides Hover Effect */}
