@@ -41,7 +41,7 @@ export function PresentationView({
       </div>
 
       {/* LIENZO DE PRESENTACIÓN CENTRAL */}
-      <div className="flex items-center justify-center flex-1 max-w-6xl mx-auto w-full my-8">
+      <div className="flex items-center justify-center flex-1 w-full p-4">
         <AnimatePresence mode="wait">
           <motion.div 
             key={activeSlide.id}
@@ -50,6 +50,7 @@ export function PresentationView({
             exit={{ opacity: 0, scale: 1.02, filter: 'blur(4px)' }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className={`w-full aspect-[16/9] ${theme.bg} rounded-xl border ${theme.accentBorder} p-16 flex flex-col justify-between shadow-[0_0_50px_rgba(0,0,0,0.3)] relative transition-colors duration-300`}
+            style={{ maxHeight: 'calc(100vh - 160px)', maxWidth: 'calc((100vh - 160px) * 16 / 9)' }}
           >
             <div>
               <div className="flex justify-between items-start mb-8">
@@ -118,22 +119,23 @@ export function PresentationView({
               )}
 
               {activeSlide.layout === 'image' && (
-                <div className="w-full h-full flex flex-col items-center justify-center mt-6">
-                  <div className="relative w-full max-w-5xl aspect-[21/9] rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center">
-                    {activeSlide.imageUrl && (
-                      <motion.img 
+                <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                  {activeSlide.imageUrl && (
+                    <motion.div 
+                      className="relative flex items-center justify-center"
+                      style={{ 
+                        width: `${activeSlide.imageScale || 100}%`,
+                        x: activeSlide.imageX || 0,
+                        y: activeSlide.imageY || 0,
+                      }}
+                    >
+                      <img 
                         src={activeSlide.imageUrl} 
                         alt="Slide content" 
-                        className="object-contain absolute" 
-                        style={{ 
-                          width: `${activeSlide.imageScale || 100}%`, 
-                          height: `${activeSlide.imageScale || 100}%`,
-                          x: activeSlide.imageX || 0,
-                          y: activeSlide.imageY || 0,
-                        }} 
+                        className="object-contain max-h-[80vh] rounded-xl shadow-2xl" 
                       />
-                    )}
-                  </div>
+                    </motion.div>
+                  )}
                 </div>
               )}
 
