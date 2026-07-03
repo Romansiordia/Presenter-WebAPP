@@ -52,16 +52,19 @@ export function PresentationView({
             className={`w-full aspect-[16/9] ${theme.bg} rounded-xl border ${theme.accentBorder} p-16 flex flex-col justify-between shadow-[0_0_50px_rgba(0,0,0,0.3)] relative transition-colors duration-300`}
             style={{ maxHeight: 'calc(100vh - 160px)', maxWidth: 'calc((100vh - 160px) * 16 / 9)' }}
           >
-            <div>
-              <h2 className={`text-5xl sm:text-6xl font-extrabold tracking-tight leading-tight ${theme.text} ${theme.fontClass}`}>
+            <div style={{ color: activeSlide.textColor || undefined }}>
+              <h2 
+                className={`text-5xl sm:text-6xl font-extrabold tracking-tight leading-tight ${theme.text} ${theme.fontClass}`}
+                style={{ fontSize: activeSlide.titleFontSize ? `calc(${activeSlide.titleFontSize} * 1.25)` : undefined, color: activeSlide.textColor || undefined }}
+              >
                 {activeSlide.title}
               </h2>
-              <p className={`text-xl mt-6 max-w-3xl leading-relaxed opacity-80 ${theme.text}`}>
+              <p className={`text-xl mt-6 max-w-3xl leading-relaxed opacity-80 ${theme.text}`} style={{ color: activeSlide.textColor || undefined }}>
                 {activeSlide.subtitle}
               </p>
             </div>
 
-            <div className="flex-1 flex items-center justify-center my-10">
+            <div className="flex-1 flex items-center justify-center my-10" style={{ color: activeSlide.textColor || undefined }}>
               
               {activeSlide.layout === 'title' && (
                 <div className="text-center w-full">

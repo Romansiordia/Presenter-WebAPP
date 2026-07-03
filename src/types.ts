@@ -23,6 +23,9 @@ export interface Slide {
   imageScale?: number | string;
   imageX?: number;
   imageY?: number;
+  textColor?: string;
+  titleFontSize?: string;
+  subtitleFontSize?: string;
 }
 
 export interface Theme {

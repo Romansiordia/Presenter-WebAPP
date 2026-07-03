@@ -59,6 +59,29 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
           {activeSlide.layout === 'image' && <span>Image</span>}
         </button>
         <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-1 text-xs font-semibold text-slate-500 cursor-pointer" title="Color de texto">
+            <span className="sr-only">Color</span>
+            <input 
+              type="color" 
+              value={activeSlide.textColor || "#334155"} 
+              onChange={(e) => onTextChange('textColor', e.target.value)} 
+              className="w-5 h-5 p-0 border-0 rounded overflow-hidden cursor-pointer bg-transparent"
+            />
+          </label>
+          <label className="flex items-center gap-1 text-xs font-semibold text-slate-500" title="Tamaño de título">
+            Tít.:
+            <input 
+              type="number" 
+              min="10" 
+              max="150"
+              value={activeSlide.titleFontSize ? parseInt(activeSlide.titleFontSize) : 48} 
+              onChange={(e) => onTextChange('titleFontSize', `${e.target.value}px`)} 
+              className="w-12 h-6 px-1 border border-slate-300 rounded text-slate-700 bg-white"
+            />
+          </label>
+        </div>
+        <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
         <div className="flex items-center gap-2 text-slate-500 text-xs">
           <Info className="w-4 h-4" /> Edit inline
         </div>
@@ -70,12 +93,13 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
           style={{ maxHeight: 'calc(100vh - 180px)', maxWidth: 'calc((100vh - 180px) * 16 / 9)' }}
         >
           
-          <div>
+          <div style={{ color: activeSlide.textColor || undefined }}>
             <h2 
               contentEditable
               suppressContentEditableWarning
               onBlur={(e) => onTextChange('title', e.currentTarget.innerText)}
               className={`text-4xl sm:text-5xl font-extrabold tracking-tight ${theme.text} ${theme.fontClass} outline-none max-h-[120px] overflow-hidden leading-tight`}
+              style={{ fontSize: activeSlide.titleFontSize, color: activeSlide.textColor || undefined }}
             >
               {activeSlide.title}
             </h2>
@@ -85,12 +109,13 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
               suppressContentEditableWarning
               onBlur={(e) => onTextChange('subtitle', e.currentTarget.innerText)}
               className={`text-lg mt-4 max-w-2xl leading-relaxed outline-none opacity-80 ${theme.text}`}
+              style={{ color: activeSlide.textColor || undefined }}
             >
               {activeSlide.subtitle}
             </p>
           </div>
 
-          <div className="flex-1 flex items-center justify-center my-8">
+          <div className="flex-1 flex items-center justify-center my-8" style={{ color: activeSlide.textColor || undefined }}>
             
             {activeSlide.layout === 'title' && (
               <div className="text-center w-full">
