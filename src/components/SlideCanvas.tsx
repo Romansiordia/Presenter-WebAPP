@@ -1,4 +1,4 @@
-import { Info, Sparkle, LayoutTemplate, List, GripHorizontal, BarChart2, Image as ImageIcon, Move, Plus, Type, CreditCard, X } from 'lucide-react';
+import { Info, Sparkle, LayoutTemplate, List, GripHorizontal, BarChart2, Image as ImageIcon, Move, Plus, Type, CreditCard, X, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 import { Slide, Theme, SlideLayout, CanvasElement, ElementType } from '../types';
 import { DynamicIcon } from './DynamicIcon';
 import { motion } from 'motion/react';
@@ -111,6 +111,30 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
           </label>
         </div>
         <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
+        <div className="flex items-center gap-1">
+          <button 
+            onClick={() => onTextChange('textAlign', 'left')}
+            className={`p-1.5 rounded transition-colors ${activeSlide.textAlign === 'left' || !activeSlide.textAlign ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}
+            title="Alinear a la izquierda"
+          >
+            <AlignLeft className="w-4 h-4" />
+          </button>
+          <button 
+            onClick={() => onTextChange('textAlign', 'center')}
+            className={`p-1.5 rounded transition-colors ${activeSlide.textAlign === 'center' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}
+            title="Centrar"
+          >
+            <AlignCenter className="w-4 h-4" />
+          </button>
+          <button 
+            onClick={() => onTextChange('textAlign', 'right')}
+            className={`p-1.5 rounded transition-colors ${activeSlide.textAlign === 'right' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}
+            title="Alinear a la derecha"
+          >
+            <AlignRight className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
         <div className="relative">
           <button 
             onClick={() => setShowAddMenu(!showAddMenu)}
@@ -159,7 +183,7 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
           style={{ maxHeight: 'calc(100vh - 180px)', maxWidth: 'calc((100vh - 180px) * 16 / 9)' }}
         >
           
-          <div style={{ color: activeSlide.textColor || undefined }}>
+          <div style={{ color: activeSlide.textColor || undefined, textAlign: activeSlide.textAlign || 'left' }}>
             <h2 
               contentEditable
               suppressContentEditableWarning
@@ -174,7 +198,7 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
               contentEditable
               suppressContentEditableWarning
               onBlur={(e) => onTextChange('subtitle', e.currentTarget.innerText)}
-              className={`text-lg mt-4 max-w-2xl leading-relaxed outline-none opacity-80 ${theme.text}`}
+              className={`text-lg mt-4 max-w-2xl leading-relaxed outline-none opacity-80 ${theme.text} mx-auto ${activeSlide.textAlign === 'center' ? 'mx-auto' : activeSlide.textAlign === 'right' ? 'ml-auto mr-0' : 'ml-0 mr-auto'}`}
               style={{ color: activeSlide.textColor || undefined }}
             >
               {activeSlide.subtitle}
@@ -432,20 +456,68 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
               className="absolute group z-30"
               style={{ x: el.x, y: el.y, width: el.width }}
             >
-              {/* Controls (Delete, Scale) */}
-              <div className="absolute -top-10 left-0 bg-slate-800 text-white rounded-lg flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 shadow-xl z-50">
+              {/* Controls (Delete, Scale, Format) */}
+              <div className="absolute -top-10 left-0 bg-slate-800 text-white rounded-lg flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 shadow-xl z-50" onPointerDown={(e) => e.stopPropagation()}>
                 <button onClick={() => handleRemoveElement(el.id)} className="p-1.5 hover:bg-red-500 rounded-md transition-colors" title="Eliminar">
                   <X className="w-3.5 h-3.5" />
                 </button>
-                {(el.type === 'image' || el.type === 'text') && (
-                  <input 
-                    type="range" 
-                    min="10" 
-                    max="300" 
-                    value={el.scale || 100} 
-                    onChange={(e) => handleUpdateElement(el.id, { scale: parseInt(e.target.value) })}
-                    className="w-20 accent-indigo-500 mx-2"
-                  />
+                
+                {el.type !== 'image' && (
+                  <>
+                    <div className="h-4 w-[1px] bg-slate-600 mx-1"></div>
+                    <label className="flex items-center cursor-pointer p-1" title="Color de texto">
+                      <input 
+                        type="color" 
+                        value={el.color || "#ffffff"} 
+                        onChange={(e) => handleUpdateElement(el.id, { color: e.target.value })} 
+                        className="w-4 h-4 p-0 border-0 rounded overflow-hidden cursor-pointer bg-transparent"
+                      />
+                    </label>
+                    <label className="flex items-center gap-1 text-[10px] font-semibold text-slate-300 ml-1" title="Tamaño de letra">
+                      <input 
+                        type="number" 
+                        min="10" 
+                        max="300"
+                        value={el.scale || 100} 
+                        onChange={(e) => handleUpdateElement(el.id, { scale: parseInt(e.target.value) })} 
+                        className="w-12 h-5 px-1 border border-slate-600 rounded bg-slate-700 text-white"
+                      />
+                      %
+                    </label>
+                    <div className="h-4 w-[1px] bg-slate-600 mx-1"></div>
+                    <button 
+                      onClick={() => handleUpdateElement(el.id, { textAlign: 'left' })}
+                      className={`p-1.5 rounded transition-colors ${el.textAlign === 'left' || !el.textAlign ? 'bg-indigo-500 text-white' : 'text-slate-300 hover:bg-slate-700'}`}
+                    >
+                      <AlignLeft className="w-3.5 h-3.5" />
+                    </button>
+                    <button 
+                      onClick={() => handleUpdateElement(el.id, { textAlign: 'center' })}
+                      className={`p-1.5 rounded transition-colors ${el.textAlign === 'center' ? 'bg-indigo-500 text-white' : 'text-slate-300 hover:bg-slate-700'}`}
+                    >
+                      <AlignCenter className="w-3.5 h-3.5" />
+                    </button>
+                    <button 
+                      onClick={() => handleUpdateElement(el.id, { textAlign: 'right' })}
+                      className={`p-1.5 rounded transition-colors ${el.textAlign === 'right' ? 'bg-indigo-500 text-white' : 'text-slate-300 hover:bg-slate-700'}`}
+                    >
+                      <AlignRight className="w-3.5 h-3.5" />
+                    </button>
+                  </>
+                )}
+
+                {el.type === 'image' && (
+                  <>
+                    <div className="h-4 w-[1px] bg-slate-600 mx-1"></div>
+                    <input 
+                      type="range" 
+                      min="10" 
+                      max="300" 
+                      value={el.scale || 100} 
+                      onChange={(e) => handleUpdateElement(el.id, { scale: parseInt(e.target.value) })}
+                      className="w-16 accent-indigo-500 mx-1"
+                    />
+                  </>
                 )}
               </div>
 
@@ -455,20 +527,32 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
                   contentEditable
                   suppressContentEditableWarning
                   onBlur={(e) => handleUpdateElement(el.id, { content: e.currentTarget.innerText })}
-                  className={`outline-none cursor-move min-h-[40px] whitespace-pre-wrap ${theme.text} font-medium`}
-                  style={{ fontSize: `${(el.scale || 100) / 100 * 1.2}rem` }}
+                  className={`outline-none cursor-move min-h-[40px] whitespace-pre-wrap font-medium`}
+                  style={{ 
+                    fontSize: `${(el.scale || 100) / 100 * 1.2}rem`,
+                    color: el.color || theme.text,
+                    textAlign: el.textAlign || 'left'
+                  }}
                 >
                   {el.content}
                 </div>
               )}
 
               {el.type === 'card' && (
-                <div className={`p-6 rounded-2xl shadow-xl border cursor-move ${theme.cardBg} ${theme.accentBorder}`}>
+                <div 
+                  className={`p-6 rounded-2xl shadow-xl border cursor-move ${theme.cardBg} ${theme.accentBorder}`}
+                  style={{
+                    color: el.color || theme.text,
+                    textAlign: el.textAlign || 'left',
+                    fontSize: `${(el.scale || 100) / 100}rem`
+                  }}
+                >
                   <h3 
                     contentEditable
                     suppressContentEditableWarning
                     onBlur={(e) => handleUpdateElement(el.id, { title: e.currentTarget.innerText })}
-                    className={`font-bold text-lg mb-2 outline-none ${theme.text}`}
+                    className={`font-bold mb-2 outline-none`}
+                    style={{ fontSize: '1.125em' }}
                   >
                     {el.title}
                   </h3>
@@ -476,7 +560,8 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
                     contentEditable
                     suppressContentEditableWarning
                     onBlur={(e) => handleUpdateElement(el.id, { content: e.currentTarget.innerText })}
-                    className={`text-sm opacity-80 outline-none min-h-[20px] ${theme.text}`}
+                    className={`opacity-80 outline-none min-h-[20px]`}
+                    style={{ fontSize: '0.875em' }}
                   >
                     {el.content}
                   </p>

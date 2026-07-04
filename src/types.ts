@@ -10,6 +10,8 @@ export interface CanvasElement {
   content?: string;
   title?: string;
   scale?: number;
+  color?: string;
+  textAlign?: 'left' | 'center' | 'right';
 }
 
 export type SlideLayout = 'title' | 'bullets' | 'features' | 'metrics' | 'image' | 'freeform';
@@ -40,6 +42,7 @@ export interface Slide {
   textColor?: string;
   titleFontSize?: string;
   subtitleFontSize?: string;
+  textAlign?: 'left' | 'center' | 'right';
   elements?: CanvasElement[];
 }
 

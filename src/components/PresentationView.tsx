@@ -52,14 +52,14 @@ export function PresentationView({
             className={`w-full aspect-[16/9] ${theme.bg} rounded-xl border ${theme.accentBorder} p-16 flex flex-col justify-between shadow-[0_0_50px_rgba(0,0,0,0.3)] relative transition-colors duration-300`}
             style={{ maxHeight: 'calc(100vh - 160px)', maxWidth: 'calc((100vh - 160px) * 16 / 9)' }}
           >
-            <div style={{ color: activeSlide.textColor || undefined }}>
+            <div style={{ color: activeSlide.textColor || undefined, textAlign: activeSlide.textAlign || 'left' }}>
               <h2 
                 className={`text-5xl sm:text-6xl font-extrabold tracking-tight leading-tight ${theme.text} ${theme.fontClass}`}
                 style={{ fontSize: activeSlide.titleFontSize ? `calc(${activeSlide.titleFontSize} * 1.25)` : undefined, color: activeSlide.textColor || undefined }}
               >
                 {activeSlide.title}
               </h2>
-              <p className={`text-xl mt-6 max-w-3xl leading-relaxed opacity-80 ${theme.text}`} style={{ color: activeSlide.textColor || undefined }}>
+              <p className={`text-xl mt-6 max-w-3xl leading-relaxed opacity-80 ${theme.text} ${activeSlide.textAlign === 'center' ? 'mx-auto' : activeSlide.textAlign === 'right' ? 'ml-auto mr-0' : 'ml-0 mr-auto'}`} style={{ color: activeSlide.textColor || undefined }}>
                 {activeSlide.subtitle}
               </p>
             </div>
@@ -146,19 +146,36 @@ export function PresentationView({
               >
                 {el.type === 'text' && (
                   <div 
-                    className={`whitespace-pre-wrap ${theme.text} font-medium`}
-                    style={{ fontSize: `${(el.scale || 100) / 100 * 1.2}rem` }}
+                    className={`whitespace-pre-wrap font-medium`}
+                    style={{ 
+                      fontSize: `${(el.scale || 100) / 100 * 1.2}rem`,
+                      color: el.color || theme.text,
+                      textAlign: el.textAlign || 'left'
+                    }}
                   >
                     {el.content}
                   </div>
                 )}
 
                 {el.type === 'card' && (
-                  <div className={`p-6 rounded-2xl shadow-xl border ${theme.cardBg} ${theme.accentBorder}`}>
-                    <h3 className={`font-bold text-lg mb-2 ${theme.text}`}>
+                  <div 
+                    className={`p-6 rounded-2xl shadow-xl border ${theme.cardBg} ${theme.accentBorder}`}
+                    style={{
+                      color: el.color || theme.text,
+                      textAlign: el.textAlign || 'left',
+                      fontSize: `${(el.scale || 100) / 100}rem`
+                    }}
+                  >
+                    <h3 
+                      className={`font-bold mb-2`}
+                      style={{ fontSize: '1.125em' }}
+                    >
                       {el.title}
                     </h3>
-                    <p className={`text-sm opacity-80 min-h-[20px] ${theme.text}`}>
+                    <p 
+                      className={`opacity-80 min-h-[20px]`}
+                      style={{ fontSize: '0.875em' }}
+                    >
                       {el.content}
                     </p>
                   </div>
