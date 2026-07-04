@@ -4,10 +4,12 @@ import { LeftSidebar } from './components/LeftSidebar';
 import { RightSidebar } from './components/RightSidebar';
 import { SlideCanvas } from './components/SlideCanvas';
 import { PresentationView } from './components/PresentationView';
+import { Slide } from './types';
 
 export default function App() {
   const {
     slides,
+    setSlides,
     currentSlideId,
     setCurrentSlideId,
     currentTheme,
@@ -28,9 +30,18 @@ export default function App() {
     handleAiSubmit,
   } = usePresentation();
 
+  const handleSlideGenerated = (newSlide: Slide) => {
+    setSlides(prev => [...prev, newSlide]);
+    setCurrentSlideId(newSlide.id);
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-900">
-      <Header onEnterPreview={() => setIsPreviewMode(true)} slides={slides} />
+      <Header 
+        onEnterPreview={() => setIsPreviewMode(true)} 
+        slides={slides} 
+        onSlideGenerated={handleSlideGenerated}
+      />
 
       <div className="flex flex-1 overflow-hidden">
         <LeftSidebar 

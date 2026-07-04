@@ -1,4 +1,4 @@
-import { Info, Sparkle, LayoutTemplate, List, GripHorizontal, BarChart2, Image as ImageIcon, Move, Plus, Type, CreditCard, X, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { Info, Sparkle, LayoutTemplate, List, GripHorizontal, BarChart2, Image as ImageIcon, Move, Plus, Type, CreditCard, X, AlignLeft, AlignCenter, AlignRight, Undo, Redo, Bold, Italic, Underline, ListOrdered } from 'lucide-react';
 import { Slide, Theme, SlideLayout, CanvasElement, ElementType } from '../types';
 import { DynamicIcon } from './DynamicIcon';
 import { motion } from 'motion/react';
@@ -43,13 +43,53 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
     onTextChange('elements', elements.filter(el => el.id !== id));
   };
 
+  const executeCommand = (command: string, value?: string) => {
+    document.execCommand(command, false, value);
+  };
+
   return (
     <main className="flex-1 bg-slate-100 flex flex-col relative overflow-hidden">
       {/* Contextual Toolbar */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md shadow-md border border-slate-200/50 rounded-full px-4 py-1.5 flex items-center gap-2 z-30">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md shadow-md border border-slate-200/50 rounded-full px-4 py-1.5 flex items-center gap-2 z-30 overflow-x-auto max-w-[95%]">
+        <div className="flex items-center gap-1 shrink-0">
+          <button onClick={() => executeCommand('undo')} className="p-1.5 text-slate-500 hover:bg-slate-100 rounded transition-colors" title="Deshacer">
+            <Undo className="w-4 h-4" />
+          </button>
+          <button onClick={() => executeCommand('redo')} className="p-1.5 text-slate-500 hover:bg-slate-100 rounded transition-colors" title="Rehacer">
+            <Redo className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="h-4 w-[1px] bg-slate-200 mx-1 shrink-0"></div>
+
+        <div className="flex items-center gap-1 shrink-0">
+          <button onClick={() => executeCommand('bold')} className="p-1.5 text-slate-500 hover:bg-slate-100 rounded transition-colors" title="Negrita">
+            <Bold className="w-4 h-4" />
+          </button>
+          <button onClick={() => executeCommand('italic')} className="p-1.5 text-slate-500 hover:bg-slate-100 rounded transition-colors" title="Cursiva">
+            <Italic className="w-4 h-4" />
+          </button>
+          <button onClick={() => executeCommand('underline')} className="p-1.5 text-slate-500 hover:bg-slate-100 rounded transition-colors" title="Subrayado">
+            <Underline className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="h-4 w-[1px] bg-slate-200 mx-1 shrink-0"></div>
+
+        <div className="flex items-center gap-1 shrink-0">
+          <button onClick={() => executeCommand('insertUnorderedList')} className="p-1.5 text-slate-500 hover:bg-slate-100 rounded transition-colors" title="Viñetas">
+            <List className="w-4 h-4" />
+          </button>
+          <button onClick={() => executeCommand('insertOrderedList')} className="p-1.5 text-slate-500 hover:bg-slate-100 rounded transition-colors" title="Lista numerada">
+            <ListOrdered className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="h-4 w-[1px] bg-slate-200 mx-1 shrink-0"></div>
+
         <button 
           onClick={() => handleLayoutChange('title')}
-          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold ${activeSlide.layout === 'title' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
+          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold shrink-0 ${activeSlide.layout === 'title' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
           title="Portada"
         >
           <LayoutTemplate className="w-4 h-4" />
@@ -57,7 +97,7 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
         </button>
         <button 
           onClick={() => handleLayoutChange('bullets')}
-          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold ${activeSlide.layout === 'bullets' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
+          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold shrink-0 ${activeSlide.layout === 'bullets' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
           title="Lista"
         >
           <List className="w-4 h-4" />
@@ -65,7 +105,7 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
         </button>
         <button 
           onClick={() => handleLayoutChange('features')}
-          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold ${activeSlide.layout === 'features' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
+          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold shrink-0 ${activeSlide.layout === 'features' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
           title="Tarjetas"
         >
           <GripHorizontal className="w-4 h-4" />
@@ -73,7 +113,7 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
         </button>
         <button 
           onClick={() => handleLayoutChange('image')}
-          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold ${activeSlide.layout === 'image' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
+          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold shrink-0 ${activeSlide.layout === 'image' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
           title="Imagen"
         >
           <ImageIcon className="w-4 h-4" />
@@ -81,20 +121,23 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
         </button>
         <button 
           onClick={() => handleLayoutChange('freeform')}
-          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold ${activeSlide.layout === 'freeform' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
+          className={`p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-semibold shrink-0 ${activeSlide.layout === 'freeform' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:text-indigo-600 hover:bg-slate-50'}`}
           title="Libre"
         >
           <Move className="w-4 h-4" />
           {activeSlide.layout === 'freeform' && <span>Libre</span>}
         </button>
-        <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
-        <div className="flex items-center gap-3">
+        <div className="h-4 w-[1px] bg-slate-200 mx-1 shrink-0"></div>
+        <div className="flex items-center gap-2 shrink-0">
           <label className="flex items-center gap-1 text-xs font-semibold text-slate-500 cursor-pointer" title="Color de texto">
             <span className="sr-only">Color</span>
             <input 
               type="color" 
               value={activeSlide.textColor || "#334155"} 
-              onChange={(e) => onTextChange('textColor', e.target.value)} 
+              onChange={(e) => {
+                onTextChange('textColor', e.target.value);
+                executeCommand('foreColor', e.target.value);
+              }} 
               className="w-5 h-5 p-0 border-0 rounded overflow-hidden cursor-pointer bg-transparent"
             />
           </label>
@@ -110,32 +153,32 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
             />
           </label>
         </div>
-        <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
-        <div className="flex items-center gap-1">
+        <div className="h-4 w-[1px] bg-slate-200 mx-1 shrink-0"></div>
+        <div className="flex items-center gap-1 shrink-0">
           <button 
-            onClick={() => onTextChange('textAlign', 'left')}
+            onClick={() => { onTextChange('textAlign', 'left'); executeCommand('justifyLeft'); }}
             className={`p-1.5 rounded transition-colors ${activeSlide.textAlign === 'left' || !activeSlide.textAlign ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}
             title="Alinear a la izquierda"
           >
             <AlignLeft className="w-4 h-4" />
           </button>
           <button 
-            onClick={() => onTextChange('textAlign', 'center')}
+            onClick={() => { onTextChange('textAlign', 'center'); executeCommand('justifyCenter'); }}
             className={`p-1.5 rounded transition-colors ${activeSlide.textAlign === 'center' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}
             title="Centrar"
           >
             <AlignCenter className="w-4 h-4" />
           </button>
           <button 
-            onClick={() => onTextChange('textAlign', 'right')}
+            onClick={() => { onTextChange('textAlign', 'right'); executeCommand('justifyRight'); }}
             className={`p-1.5 rounded transition-colors ${activeSlide.textAlign === 'right' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-500 hover:bg-slate-100'}`}
             title="Alinear a la derecha"
           >
             <AlignRight className="w-4 h-4" />
           </button>
         </div>
-        <div className="h-4 w-[1px] bg-slate-200 mx-2"></div>
-        <div className="relative">
+        <div className="h-4 w-[1px] bg-slate-200 mx-1 shrink-0"></div>
+        <div className="relative shrink-0">
           <button 
             onClick={() => setShowAddMenu(!showAddMenu)}
             className="p-2 rounded-full transition-colors flex items-center gap-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700"
@@ -146,7 +189,7 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
           </button>
           
           {showAddMenu && (
-            <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 w-48 overflow-hidden z-50">
+            <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-200 w-48 overflow-hidden z-50">
               <button 
                 onClick={() => handleAddElement('text')}
                 className="w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center gap-3 text-sm font-semibold text-slate-700 border-b border-slate-100"
