@@ -142,7 +142,7 @@ export function PresentationView({
               <motion.div
                 key={el.id}
                 className="absolute z-30"
-                style={{ x: el.x, y: el.y, width: el.width }}
+                style={{ x: el.x, y: el.y, width: el.type === 'text' ? 'max-content' : el.width, maxWidth: `calc(100% - ${el.x}px)` }}
               >
                 {el.type === 'text' && (
                   <div 

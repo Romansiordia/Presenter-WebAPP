@@ -497,7 +497,7 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
               dragMomentum={false}
               onDragEnd={(_, info) => handleUpdateElement(el.id, { x: el.x + info.offset.x, y: el.y + info.offset.y })}
               className="absolute group z-30"
-              style={{ x: el.x, y: el.y, width: el.width }}
+              style={{ x: el.x, y: el.y, width: el.type === 'text' ? 'max-content' : el.width, maxWidth: `calc(100% - ${el.x}px)` }}
             >
               {/* Controls (Delete, Scale, Format) */}
               <div className="absolute -top-10 left-0 bg-slate-800 text-white rounded-lg flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity p-1 shadow-xl z-50" onPointerDown={(e) => e.stopPropagation()}>
