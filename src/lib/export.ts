@@ -2,21 +2,26 @@ import pptxgen from "pptxgenjs";
 import { Slide } from "../types";
 
 export async function exportToPowerPoint(slides: Slide[]) {
-  const pres = new pptxgen();
-  
-  // Set layout
-  pres.layout = 'LAYOUT_16x9';
-
-  slides.forEach((s) => {
-    let slide = pres.addSlide();
+  try {
+    const pres = new pptxgen();
     
-    // Add Background if present
-    if (s.backgroundImage) {
-      slide.background = { path: s.backgroundImage };
-    } else if (s.backgroundColor) {
-      const hexColor = s.backgroundColor.startsWith('#') ? s.backgroundColor.substring(1) : s.backgroundColor;
-      slide.background = { color: hexColor };
-    }
+    // Set layout
+    pres.layout = 'LAYOUT_16x9';
+
+    slides.forEach((s) => {
+      let slide = pres.addSlide();
+      
+      // Add Background if present
+      try {
+        if (s.backgroundImage) {
+          slide.background = { path: s.backgroundImage };
+        } else if (s.backgroundColor) {
+          const hexColor = s.backgroundColor.startsWith('#') ? s.backgroundColor.substring(1) : s.backgroundColor;
+          slide.background = { color: hexColor };
+        }
+      } catch (e) {
+        console.error("Could not add background to PPTX", e);
+      }
 
     // Add Title
     slide.addText(s.title || "", { 
@@ -40,7 +45,7 @@ export async function exportToPowerPoint(slides: Slide[]) {
     });
 
     if (s.layout === 'bullets') {
-       const bulletOptions = s.bullets.map(b => ({ text: b, options: { bullet: true, color: '334155', fontSize: 18 } }));
+       const bulletOptions = (s.bullets || []).map(b => ({ text: b, options: { bullet: true, color: '334155', fontSize: 18 } }));
        slide.addText(bulletOptions, { 
          x: 0.5, 
          y: 2.2, 
@@ -51,7 +56,7 @@ export async function exportToPowerPoint(slides: Slide[]) {
        });
     } 
     else if (s.layout === 'features') {
-       s.features.forEach((f, idx) => {
+       (s.features || []).forEach((f, idx) => {
           const xPos = 0.5 + (idx % 3) * 3;
           const yPos = 2.5 + Math.floor(idx / 3) * 2;
           
@@ -69,7 +74,7 @@ export async function exportToPowerPoint(slides: Slide[]) {
        });
     } 
     else if (s.layout === 'metrics') {
-       s.metrics.forEach((m, idx) => {
+       (s.metrics || []).forEach((m, idx) => {
           const xPos = 0.5 + (idx % 2) * 4.5;
           slide.addText(m.number, { 
             x: xPos, y: 2.5, w: 4, h: 1.5, 
@@ -98,6 +103,10 @@ export async function exportToPowerPoint(slides: Slide[]) {
     }
   });
 
-  // Save the presentation
-  pres.writeFile({ fileName: "Zenith_Presentation.pptx" });
+    // Save the presentation
+    await pres.writeFile({ fileName: "Zenith_Presentation.pptx" });
+  } catch (error) {
+    console.error("Error exporting to PowerPoint:", error);
+    alert("Hubo un error al exportar la presentación. Es posible que algunas imágenes tengan restricciones de acceso (CORS) que impidan su descarga.");
+  }
 }
