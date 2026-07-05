@@ -130,7 +130,7 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
         <div className="h-4 w-[1px] bg-slate-200 mx-1 shrink-0"></div>
         <div className="flex items-center gap-2 shrink-0">
           <label className="flex items-center gap-1 text-xs font-semibold text-slate-500 cursor-pointer" title="Color de texto">
-            <span className="sr-only">Color</span>
+            <span className="sr-only">Color de texto</span>
             <input 
               type="color" 
               value={activeSlide.textColor || "#334155"} 
@@ -150,6 +150,28 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
               value={activeSlide.titleFontSize ? parseInt(activeSlide.titleFontSize) : 48} 
               onChange={(e) => onTextChange('titleFontSize', `${e.target.value}px`)} 
               className="w-12 h-6 px-1 border border-slate-300 rounded text-slate-700 bg-white"
+            />
+          </label>
+        </div>
+        <div className="h-4 w-[1px] bg-slate-200 mx-1 shrink-0"></div>
+        <div className="flex items-center gap-2 shrink-0">
+          <label className="flex items-center gap-1 text-xs font-semibold text-slate-500 cursor-pointer" title="Color de fondo">
+            Fondo:
+            <input 
+              type="color" 
+              value={activeSlide.backgroundColor || "#ffffff"} 
+              onChange={(e) => onTextChange('backgroundColor', e.target.value)} 
+              className="w-5 h-5 p-0 border-0 rounded overflow-hidden cursor-pointer bg-transparent"
+            />
+          </label>
+          <label className="flex items-center gap-1 text-xs font-semibold text-slate-500 cursor-pointer" title="Imagen de fondo (URL)">
+            <ImageIcon className="w-4 h-4" />
+            <input 
+              type="text" 
+              placeholder="URL imagen..."
+              value={activeSlide.backgroundImage || ""} 
+              onChange={(e) => onTextChange('backgroundImage', e.target.value)} 
+              className="w-24 h-6 px-1 border border-slate-300 rounded text-slate-700 bg-white text-[10px]"
             />
           </label>
         </div>
@@ -222,11 +244,16 @@ export function SlideCanvas({ activeSlide, theme, onTextChange }: SlideCanvasPro
 
       <div className="flex-1 flex items-center justify-center p-8 overflow-hidden">
         <div 
-          className={`w-full aspect-[16/9] ${theme.bg} shadow-xl rounded-lg overflow-hidden relative border border-slate-200 p-12 flex flex-col justify-between transition-all duration-300`}
-          style={{ maxHeight: 'calc(100vh - 180px)', maxWidth: 'calc((100vh - 180px) * 16 / 9)' }}
+          className={`w-full aspect-[16/9] ${theme.bg} shadow-xl rounded-lg overflow-hidden relative border border-slate-200 p-12 flex flex-col justify-between transition-all duration-300 bg-cover bg-center`}
+          style={{ 
+            maxHeight: 'calc(100vh - 180px)', 
+            maxWidth: 'calc((100vh - 180px) * 16 / 9)',
+            backgroundColor: activeSlide.backgroundColor || undefined,
+            backgroundImage: activeSlide.backgroundImage ? `url(${activeSlide.backgroundImage})` : undefined
+          }}
         >
           
-          <div style={{ color: activeSlide.textColor || undefined, textAlign: activeSlide.textAlign || 'left' }}>
+          <div style={{ color: activeSlide.textColor || undefined, textAlign: activeSlide.textAlign || 'left', position: 'relative', zIndex: 10 }}>
             <h2 
               contentEditable
               suppressContentEditableWarning

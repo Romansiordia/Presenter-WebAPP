@@ -49,10 +49,15 @@ export function PresentationView({
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, scale: 1.02, filter: 'blur(4px)' }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className={`w-full aspect-[16/9] ${theme.bg} rounded-xl border ${theme.accentBorder} p-16 flex flex-col justify-between shadow-[0_0_50px_rgba(0,0,0,0.3)] relative transition-colors duration-300`}
-            style={{ maxHeight: 'calc(100vh - 160px)', maxWidth: 'calc((100vh - 160px) * 16 / 9)' }}
+            className={`w-full aspect-[16/9] ${theme.bg} rounded-xl border ${theme.accentBorder} p-16 flex flex-col justify-between shadow-[0_0_50px_rgba(0,0,0,0.3)] relative transition-colors duration-300 bg-cover bg-center`}
+            style={{ 
+              maxHeight: 'calc(100vh - 160px)', 
+              maxWidth: 'calc((100vh - 160px) * 16 / 9)',
+              backgroundColor: activeSlide.backgroundColor || undefined,
+              backgroundImage: activeSlide.backgroundImage ? `url(${activeSlide.backgroundImage})` : undefined
+            }}
           >
-            <div style={{ color: activeSlide.textColor || undefined, textAlign: activeSlide.textAlign || 'left' }}>
+            <div style={{ color: activeSlide.textColor || undefined, textAlign: activeSlide.textAlign || 'left', position: 'relative', zIndex: 10 }}>
               <h2 
                 className={`text-5xl sm:text-6xl font-extrabold tracking-tight leading-tight ${theme.text} ${theme.fontClass}`}
                 style={{ fontSize: activeSlide.titleFontSize ? `calc(${activeSlide.titleFontSize} * 1.25)` : undefined, color: activeSlide.textColor || undefined }}

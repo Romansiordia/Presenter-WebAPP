@@ -44,6 +44,8 @@ export interface Slide {
   subtitleFontSize?: string;
   textAlign?: 'left' | 'center' | 'right';
   elements?: CanvasElement[];
+  backgroundColor?: string;
+  backgroundImage?: string;
 }
 
 export interface Theme {
