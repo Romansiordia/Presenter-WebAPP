@@ -30,13 +30,14 @@ export function Header({ onEnterPreview, slides, onSlideGenerated }: HeaderProps
         
         <div className="relative group">
           <button 
+            onClick={() => exportToPowerPoint(slides)}
             className="flex items-center space-x-2 bg-white border border-slate-200 hover:bg-slate-50 px-4 py-1.5 rounded-md text-sm font-semibold text-slate-700 transition-colors shadow-sm"
           >
             <Download className="w-4 h-4" />
             <span>Guardar</span>
           </button>
           
-          <div className="absolute right-0 top-full mt-1 w-40 bg-white border border-slate-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+          <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-slate-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
             <div className="p-1">
               <button 
                 onClick={() => exportToPowerPoint(slides)}
@@ -45,11 +46,11 @@ export function Header({ onEnterPreview, slides, onSlideGenerated }: HeaderProps
                 Formato (.pptx)
               </button>
               <button 
-                onClick={() => exportToPowerPoint(slides)}
-                className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-sm font-medium"
-                title="Generado internamente como pptx compatible con todas las versiones modernas"
+                onClick={() => alert("Para guardar directamente en Google Drive necesitamos configurar una integración (OAuth) con tu cuenta de Google. ¡Puedo implementarlo si lo deseas!")}
+                className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-sm font-medium flex items-center justify-between"
               >
-                Formato (.ppt)
+                <span>Google Drive</span>
+                <span className="text-[9px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded">PRO</span>
               </button>
             </div>
           </div>
