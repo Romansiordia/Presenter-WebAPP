@@ -2,19 +2,37 @@ import pptxgen from "pptxgenjs";
 import { Slide } from "../types";
 
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string | null> {
-  try {
-    const response = await fetch(imageUrl);
-    if (!response.ok) return null;
+  const fetchAsBase64 = async (url: string): Promise<string> => {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const blob = await response.blob();
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = () => resolve(null);
+      reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
+  };
+
+  try {
+    // Try directly first (works for blob: URLs, same-origin, or CORS-enabled images)
+    return await fetchAsBase64(imageUrl);
   } catch (error) {
-    console.warn("Could not fetch image for PPTX export due to CORS or network error:", error);
-    return null;
+    console.warn("Direct fetch failed, trying CORS proxies...", error);
+    try {
+      // Fallback 1: corsproxy.io
+      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(imageUrl)}`;
+      return await fetchAsBase64(proxyUrl);
+    } catch (proxyError) {
+      try {
+        // Fallback 2: allorigins
+        const proxyUrl2 = `https://api.allorigins.win/raw?url=${encodeURIComponent(imageUrl)}`;
+        return await fetchAsBase64(proxyUrl2);
+      } catch (proxyError2) {
+        console.warn("All image fetch attempts failed:", proxyError2);
+        return null;
+      }
+    }
   }
 }
 
