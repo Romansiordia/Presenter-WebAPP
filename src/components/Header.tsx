@@ -1,6 +1,6 @@
 import { Presentation, Play, Download } from 'lucide-react';
 import { Slide } from '../types';
-import { exportToPowerPoint } from '../lib/export';
+import { exportToPowerPoint, saveToGoogleDrive, exportToPDF } from '../lib/export';
 import { DictationButton } from './DictationButton';
 
 interface HeaderProps {
@@ -43,14 +43,19 @@ export function Header({ onEnterPreview, slides, onSlideGenerated }: HeaderProps
                 onClick={() => exportToPowerPoint(slides)}
                 className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-sm font-medium"
               >
-                Formato (.pptx)
+                PowerPoint (.pptx)
               </button>
               <button 
-                onClick={() => alert("Para guardar directamente en Google Drive necesitamos configurar una integración (OAuth) con tu cuenta de Google. ¡Puedo implementarlo si lo deseas!")}
+                onClick={() => exportToPDF(slides)}
+                className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-sm font-medium"
+              >
+                Formato (.pdf)
+              </button>
+              <button 
+                onClick={() => saveToGoogleDrive(slides)}
                 className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-sm font-medium flex items-center justify-between"
               >
                 <span>Google Drive</span>
-                <span className="text-[9px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded">PRO</span>
               </button>
             </div>
           </div>
