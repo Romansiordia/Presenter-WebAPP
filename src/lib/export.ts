@@ -10,6 +10,14 @@ export async function exportToPowerPoint(slides: Slide[]) {
   slides.forEach((s) => {
     let slide = pres.addSlide();
     
+    // Add Background if present
+    if (s.backgroundImage) {
+      slide.background = { path: s.backgroundImage };
+    } else if (s.backgroundColor) {
+      const hexColor = s.backgroundColor.startsWith('#') ? s.backgroundColor.substring(1) : s.backgroundColor;
+      slide.background = { color: hexColor };
+    }
+
     // Add Title
     slide.addText(s.title || "", { 
       x: 0.5, 
