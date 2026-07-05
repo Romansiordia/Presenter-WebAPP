@@ -153,20 +153,34 @@ export async function saveToGoogleDrive(slides: Slide[]) {
       mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     };
 
-    const form = new FormData();
-    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-    form.append('file', blob);
-
-    const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    // 1. Create the file metadata
+    const metaResponse = await fetch('https://www.googleapis.com/drive/v3/files', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       },
-      body: form
+      body: JSON.stringify(metadata)
     });
 
-    if (!response.ok) {
-      throw new Error(`Google Drive API error: ${response.status}`);
+    if (!metaResponse.ok) {
+      throw new Error(`Google Drive API metadata error: ${metaResponse.status}`);
+    }
+
+    const fileMeta = await metaResponse.json();
+
+    // 2. Upload the file content
+    const uploadResponse = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${fileMeta.id}?uploadType=media`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      },
+      body: blob
+    });
+
+    if (!uploadResponse.ok) {
+      throw new Error(`Google Drive API upload error: ${uploadResponse.status}`);
     }
 
     alert('¡Guardado exitosamente en Google Drive!');
@@ -189,7 +203,14 @@ export async function exportToPDF(slides: Slide[]) {
       const s = slides[i];
       if (i > 0) pdf.addPage();
       
-      if (s.backgroundColor) {
+      if (s.backgroundImage) {
+        const base64 = await getBase64ImageFromUrl(s.backgroundImage);
+        if (base64) {
+          const match = base64.match(/^data:image\/([a-zA-Z0-9]+);base64,/);
+          const format = match ? match[1].toUpperCase() : 'JPEG';
+          pdf.addImage(base64, format, 0, 0, 13.33, 7.5);
+        }
+      } else if (s.backgroundColor) {
         pdf.setFillColor(s.backgroundColor);
         pdf.rect(0, 0, 13.33, 7.5, 'F');
       }
@@ -208,6 +229,40 @@ export async function exportToPDF(slides: Slide[]) {
         s.bullets.forEach((b, idx) => {
           pdf.text(`• ${b}`, 0.5, 2.5 + (idx * 0.4));
         });
+      } else if (s.layout === 'features') {
+        (s.features || []).forEach((f, idx) => {
+          const xPos = 0.5 + (idx % 3) * 4.2;
+          const yPos = 2.5 + Math.floor(idx / 3) * 2;
+          
+          pdf.setFillColor('#f8fafc');
+          pdf.rect(xPos, yPos, 4, 1.5, 'F');
+          
+          pdf.setTextColor('#0f172a');
+          pdf.setFontSize(14);
+          pdf.text(f.title, xPos + 2, yPos + 0.5, { align: 'center' });
+          
+          pdf.setTextColor('#64748b');
+          pdf.setFontSize(11);
+          pdf.text(f.desc, xPos + 2, yPos + 1, { align: 'center' });
+        });
+      } else if (s.layout === 'metrics') {
+        (s.metrics || []).forEach((m, idx) => {
+          const xPos = 0.5 + (idx % 2) * 6;
+          pdf.setTextColor('#4f46e5');
+          pdf.setFontSize(64);
+          pdf.text(m.number, xPos + 3, 3.5, { align: 'center' });
+          
+          pdf.setTextColor('#64748b');
+          pdf.setFontSize(14);
+          pdf.text(m.label, xPos + 3, 4.2, { align: 'center' });
+        });
+      } else if (s.layout === 'image' && s.imageUrl) {
+        const base64 = await getBase64ImageFromUrl(s.imageUrl);
+        if (base64) {
+          const match = base64.match(/^data:image\/([a-zA-Z0-9]+);base64,/);
+          const format = match ? match[1].toUpperCase() : 'JPEG';
+          pdf.addImage(base64, format, 0.5, 2.2, 9, 5);
+        }
       }
     }
     pdf.save("Zenith_Presentation.pdf");
